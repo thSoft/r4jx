@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.xtend.XTEND_CONTAINER"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="/Users/thsoft/Development/lib/reactive4java/reactive4java-0.96.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/reactive4java"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
