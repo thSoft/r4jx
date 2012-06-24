@@ -39,6 +39,20 @@ class Observables {
 	}
 
 	/**
+	 * Emits a combination of the latest values of the given streams whenever one sends a new value.
+	 */
+	def static <A, B, C, D> Observable<D> combineLatest(Observable<? extends A> oa, Observable<? extends B> ob, Observable<? extends C> oc, (A, B, C) => D selector) {
+		combineLatest(oa, ob, [a, b | new Tuple2(a, b)]).combineLatest(oc, [ab, c | selector.apply(ab.a, ab.b, c)]) 
+	}
+
+	/**
+	 * Emits a combination of the latest values of the given streams whenever one sends a new value.
+	 */
+	def static <A, B, C, D, E> Observable<E> combineLatest(Observable<? extends A> oa, Observable<? extends B> ob, Observable<? extends C> oc, Observable<? extends D> od, (A, B, C, D) => E selector) {
+		combineLatest(oa, ob, oc, [a, b, c | new Tuple3(a, b, c)]).combineLatest(od, [abc, d | selector.apply(abc.a, abc.b, abc.c, d)]) 
+	}
+
+	/**
 	 * Registers an observer with an {@link onNext} handler concisely.
 	 */
 	def static <T> register(Observable<? extends T> source, (T) => void onNext) {
