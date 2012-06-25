@@ -39,6 +39,13 @@ class Observables {
 	}
 
 	/**
+	 * Emits true whenever {@link source} emitted the event sequence represented by {@link infix}.
+	 */
+	def static <T> Observable<Boolean> emitted(Observable<? extends T> source, Iterable<? extends T> infix) {
+		source.selectMany[source.startsWith(toObservable(infix))].where[it]
+	}
+
+	/**
 	 * Emits a combination of the latest values of the given streams whenever one sends a new value.
 	 */
 	def static <A, B, C, D> Observable<D> combineLatest(Observable<? extends A> oa, Observable<? extends B> ob, Observable<? extends C> oc, (A, B, C) => D selector) {
