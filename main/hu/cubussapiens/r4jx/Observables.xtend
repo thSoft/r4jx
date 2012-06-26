@@ -4,10 +4,26 @@ import hu.akarnokd.reactive4java.reactive.Observable
 
 import static extension hu.cubussapiens.r4jx.Observables.*
 import static extension hu.akarnokd.reactive4java.reactive.Reactive.*
+import static extension hu.akarnokd.reactive4java.interactive.Interactive.*
+import hu.akarnokd.reactive4java.base.Scheduler
 
 class Observables {
 
 	private new() {
+	}
+
+	/**
+	 * Emits the first {@link count} elements from {@link source}. 
+	 */
+	def static <T> Observable<T> takeFirst(Observable<? extends T> source, int count) {
+		source.where[index, _ | index < count]
+	}
+
+	/**
+	 * Emits the first element of {@link source}, if any.
+	 */
+	def static <T> Observable<T> takeFirst(Observable<? extends T> source) {
+		source.takeFirst(1)
 	}
 
 	/**
@@ -16,33 +32,19 @@ class Observables {
 	def static <T> Observable<T> takeLast(Observable<? extends T> source) {
 		source.takeLast(1)
 	}
-
-	/**
-	 * Emits the first element of {@link source}, if any.
-	 */
-	def static <T> Observable<T> takeFirst(Observable<? extends T> source) {
-		source.take(1)
-	}
 	
 	/**
-	 * Emits whether {@link first} and {@link second} emitted the same elements when either one completes.
+	 * Emits whether {@link source} started with the same elements as {@link prefix}.
 	 */
-	def static <T> Observable<Boolean> startWithSameValues(Observable<? extends T> first, Observable<? extends T> second) {
-		zip(first, second, [a, b | a == b]).all[true]
-	}
-	
-	/**
-	 * Emits whether {@link source} emitted the same elements as {@link prefix} when {@link prefix} completes.
-	 */
-	def static <T> Observable<Boolean> startsWith(Observable<? extends T> source, Observable<? extends T> prefix) {
-		source.takeUntil(prefix.takeLast).sequenceEqual(prefix)
+	def static <T> Observable<Boolean> startsWith(Observable<? extends T> source, Iterable<? extends T> prefix) {
+		toObservable(prefix).sequenceEqual(source.takeFirst(prefix.size))
 	}
 
 	/**
 	 * Emits true whenever {@link source} emitted the event sequence represented by {@link infix}.
 	 */
 	def static <T> Observable<Boolean> emitted(Observable<? extends T> source, Iterable<? extends T> infix) {
-		source.selectMany[source.startsWith(toObservable(infix))].where[it]
+		source.selectMany[source.startsWith(infix)].where[it]
 	}
 
 	/**
@@ -78,6 +80,20 @@ class Observables {
 	 */
 	def static <T> register(Observable<? extends T> source, (T) => void onNext, () => void onFinish, (Throwable) => void onError) {
 		source.register(toObserver(onNext, onError, onFinish))
+	}
+
+	/**
+	 * Varargs version of {@link Reactive#toObservable(Iterable)}.
+	 */
+	def static <T> makeObservable(T... values) {
+		toObservable(toIterable(values))
+	}
+	
+	/**
+	 * Varargs version of {@link Reactive#toObservable(Iterable, Scheduler)}.
+	 */
+	def static <T> makeObservable(Scheduler pool, T... values) {
+		toObservable(toIterable(values), pool)
 	}
 
 }
