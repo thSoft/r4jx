@@ -6,6 +6,9 @@ import static extension hu.cubussapiens.r4jx.Observables.*
 import static extension hu.akarnokd.reactive4java.reactive.Reactive.*
 import static extension hu.akarnokd.reactive4java.interactive.Interactive.*
 import hu.akarnokd.reactive4java.base.Scheduler
+import hu.akarnokd.reactive4java.reactive.Observer
+import java.util.List
+import com.google.common.collect.Lists
 
 class Observables {
 
@@ -34,6 +37,19 @@ class Observables {
 	}
 	
 	/**
+	 * Buffer the nodes as they become available and send them out in bufferSize chunks.
+	 * The observers return a new and modifiable list of T on every next() call.
+	 * @param <T> the type of the elements
+	 * @param source the source observable
+	 * @param bufferSize the target buffer size
+	 * @param skip the number of new elements in the next buffer (0 means bufferSize)
+	 * @return the observable of the list
+	 */
+	def static <T> Observable<List<T>> buffer(Observable<? extends T> source, int bufferSize, int skip) {
+		[observer | source.register(new BufferObserver(bufferSize, skip, observer))]
+	}
+	
+	/**
 	 * Emits whether {@link source} started with the same elements as {@link prefix}.
 	 */
 	def static <T> Observable<Boolean> startsWith(Observable<? extends T> source, Iterable<? extends T> prefix) {
@@ -44,7 +60,7 @@ class Observables {
 	 * Emits true whenever {@link source} emitted the event sequence represented by {@link infix}.
 	 */
 	def static <T> Observable<Boolean> emitted(Observable<? extends T> source, Iterable<? extends T> infix) {
-		source.selectMany[source.startsWith(infix)].where[it]
+		source.buffer(infix.size, 1).select[infix.elementsEqual(it)].where[it]
 	}
 
 	/**
@@ -96,4 +112,41 @@ class Observables {
 		toObservable(toIterable(values), pool)
 	}
 
+}
+
+class BufferObserver<T> implements Observer<T> {
+
+	new(int bufferSize, int skip, Observer<? super List<T>> observer) {
+		this.bufferSize = bufferSize
+		this.skip = skip
+		this.observer = observer
+	}
+
+	val int bufferSize
+
+	val int skip
+
+	val Observer<? super List<T>> observer
+
+	var List<T> buffer = newArrayList()
+
+	override void error(Throwable ex) {
+		observer.error(ex)
+	}
+
+	override void finish() {
+		if (buffer != null && buffer.size() > 0) {
+			observer.next(buffer)
+		}
+		observer.finish()
+	}
+
+	override void next(T value) {
+		buffer.add(value as T)
+		if (buffer.size() == bufferSize) {
+			observer.next(buffer)
+			buffer = if (skip == 0) <T>newArrayList else Lists::<T>newArrayList(buffer.drop(skip))
+		}
+	}
+	
 }

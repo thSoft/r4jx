@@ -11,5 +11,12 @@ class Iterables {
 	def static <T> Iterable<T> makeIterable(T... values) {
 		toIterable(values)
 	}
-	
+
+	/**
+	 * Whether {@link source} starts with the same elements as {@link prefix}.
+	 */
+	def static <T> boolean startsWith(Iterable<? extends T> source, Iterable<? extends T> prefix) {
+		prefix.elementsEqual(source.take(prefix.size))
+	}
+
 }
