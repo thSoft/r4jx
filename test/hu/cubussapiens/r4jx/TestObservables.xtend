@@ -1,8 +1,6 @@
 package hu.cubussapiens.r4jx
 
 import org.junit.Test
-import hu.akarnokd.reactive4java.query.IterableBuilder
-import org.eclipse.xtext.xbase.lib.InputOutput
 
 import static junit.framework.Assert.*
 import static java.lang.Math.*
@@ -27,19 +25,12 @@ class TestObservables {
 	}
 
 	@Test def bufferWithSkip() {
-		val e1 = 1
-		val e2 = 2
-		val e3 = 3
-		val e4 = 4
-		val e5 = 5
-		val i = makeIterable(e1, e2, e3, e4, e5)
-		val result = i.toObservable.buffer(4, 2).toIterable
-		val expected = makeIterable(makeIterable(e1, e2, e3, e4), makeIterable(e3, e4, e5))
-		IterableBuilder::from(expected.select[toList]).print
-		InputOutput::println
-		IterableBuilder::from(result).print
-		assertEquals(expected.size, result.size)
-		assertTrue(zip(expected, result, [a, b | a.elementsEqual(b)]).all[it].first)
+		val i = makeIterable(1, 2, 3, 4, 5)
+		val bufferSize = 4
+		val skip = 2
+		val result = i.toObservable.buffer(bufferSize, skip).toIterable
+		val expected = makeIterable(i.subsequence(0, bufferSize), i.subsequence(skip, bufferSize))
+		assertTrue(sequenceEqual(expected, result, [a, b | a.elementsEqual(b)]))
 	}
 
 	@Test def startsWith() {
