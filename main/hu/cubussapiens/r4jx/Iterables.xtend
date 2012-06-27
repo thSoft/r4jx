@@ -16,6 +16,13 @@ class Iterables {
 	}
 
 	/**
+	 * Takes the first {@link count} elements from {@link source}. 
+	 */
+	def static <T> Iterable<? extends T> takeFirst(Iterable<? extends T> source, int count) {
+		IterableExtensions::take(source, count)
+	}
+
+	/**
 	 * Whether {@link source} starts with the same elements as {@link prefix}.
 	 */
 	def static <T> boolean startsWith(Iterable<? extends T> source, Iterable<? extends T> prefix) {
@@ -25,8 +32,8 @@ class Iterables {
 	/**
 	 * Returns {@link count} elements starting from {@link startIndex} from {@link source}.
 	 */
-	def static <T> Iterable<T> subsequence(Iterable<T> source, int startIndex, int count) {
-		IterableExtensions::take(source.drop(startIndex), count)
+	def static <T> Iterable<? extends T> subsequence(Iterable<T> source, int startIndex, int count) {
+		source.drop(startIndex).takeFirst(count)
 	}
 
 	/**
