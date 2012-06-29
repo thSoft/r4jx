@@ -8,7 +8,7 @@ import static extension hu.akarnokd.reactive4java.interactive.Interactive.*
 import hu.akarnokd.reactive4java.base.Scheduler
 import hu.akarnokd.reactive4java.reactive.Observer
 import java.util.List
-import com.google.common.collect.Lists
+import static com.google.common.collect.Lists.*
 
 class Observables {
 
@@ -37,13 +37,7 @@ class Observables {
 	}
 	
 	/**
-	 * Buffer the nodes as they become available and send them out in bufferSize chunks.
-	 * The observers return a new and modifiable list of T on every next() call.
-	 * @param <T> the type of the elements
-	 * @param source the source observable
-	 * @param bufferSize the target buffer size
-	 * @param skip the number of new elements in the next buffer (0 means bufferSize)
-	 * @return the observable of the list
+	 * Buffers the nodes from {@link source} as they become available and send them out in {@link bufferSize} chunks after every {@link skip} elements (0 means {@link bufferSize}).
 	 */
 	def static <T> Observable<List<T>> buffer(Observable<? extends T> source, int bufferSize, int skip) {
 		[observer | source.register(new BufferObserver(bufferSize, skip, observer))]
@@ -145,7 +139,7 @@ class BufferObserver<T> implements Observer<T> {
 		buffer.add(value as T)
 		if (buffer.size() == bufferSize) {
 			observer.next(buffer)
-			buffer = if (skip == 0) <T>newArrayList else Lists::<T>newArrayList(buffer.drop(skip))
+			buffer = if (skip == 0) <T>newArrayList else <T>newArrayList(buffer.drop(skip))
 		}
 	}
 	
