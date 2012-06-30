@@ -1,14 +1,16 @@
 package hu.cubussapiens.r4jx
 
+import hu.akarnokd.reactive4java.reactive.Reactive
+import java.util.NoSuchElementException
 import org.junit.Test
 
+import static hu.akarnokd.reactive4java.interactive.Interactive.*
+import static hu.cubussapiens.r4jx.Observables.*
 import static junit.framework.Assert.*
-import static java.lang.Math.*
 
-import static extension hu.akarnokd.reactive4java.interactive.Interactive.*
 import static extension hu.akarnokd.reactive4java.reactive.Reactive.*
-import static extension hu.cubussapiens.r4jx.Observables.*
 import static extension hu.cubussapiens.r4jx.Iterables.*
+import hu.akarnokd.reactive4java.base.TooManyElementsException
 
 class TestReactive {
 	
@@ -42,6 +44,20 @@ class TestReactive {
 		val result = i.toObservable.window(bufferSize, skip).select[toIterable].toIterable
 		val expected = makeIterable(i.subsequence(0, bufferSize), i.subsequence(skip, bufferSize))
 		assertTrue(sequenceEqual(expected, result, [a, b | a.elementsEqual(b)]))
+	}
+
+	@Test def single() {
+		val expected = 42
+		val o = makeObservable(expected)
+		assertEquals(expected, o.single)
+	}
+
+	@Test(expected = typeof(NoSuchElementException)) def void singleNoSuchElement() {
+		Reactive::empty.single
+	}
+
+	@Test(expected = typeof(TooManyElementsException)) def void singleTooManyElements() {
+		makeObservable(1, 2).single
 	}
 
 }
