@@ -1,15 +1,16 @@
 package hu.cubussapiens.r4jx
 
-import hu.akarnokd.reactive4java.reactive.Observable
-
-import static extension hu.cubussapiens.r4jx.Observables.*
-import static extension hu.akarnokd.reactive4java.reactive.Reactive.*
-import static extension hu.akarnokd.reactive4java.interactive.Interactive.*
 import hu.akarnokd.reactive4java.base.Scheduler
+import hu.akarnokd.reactive4java.reactive.Observable
 import hu.akarnokd.reactive4java.reactive.Observer
-import java.util.List
-import static com.google.common.collect.Lists.*
 import java.io.Closeable
+import java.util.List
+
+import static com.google.common.collect.Lists.*
+import static hu.akarnokd.reactive4java.interactive.Interactive.*
+
+import static extension hu.akarnokd.reactive4java.reactive.Reactive.*
+import static extension hu.cubussapiens.r4jx.Observables.*
 
 class Observables {
 

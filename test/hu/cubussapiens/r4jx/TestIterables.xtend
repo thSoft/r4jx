@@ -1,9 +1,9 @@
 package hu.cubussapiens.r4jx
 
 import org.junit.Test
-import static junit.framework.Assert.*
 
 import static hu.cubussapiens.r4jx.Iterables.*
+import static junit.framework.Assert.*
 
 class TestIterables {
 	
