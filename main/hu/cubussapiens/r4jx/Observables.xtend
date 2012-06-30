@@ -9,11 +9,53 @@ import hu.akarnokd.reactive4java.base.Scheduler
 import hu.akarnokd.reactive4java.reactive.Observer
 import java.util.List
 import static com.google.common.collect.Lists.*
+import java.io.Closeable
 
 class Observables {
 
 	private new() {
 	}
+
+	// Create
+
+	/**
+	 * Varargs version of {@link Reactive#toObservable(Iterable)}.
+	 */
+	def static <T> Observable<T> makeObservable(T... values) {
+		toObservable(toIterable(values))
+	}
+	
+	/**
+	 * Varargs version of {@link Reactive#toObservable(Iterable, Scheduler)}.
+	 */
+	def static <T> Observable<T> makeObservable(Scheduler pool, T... values) {
+		toObservable(toIterable(values), pool)
+	}
+
+	// Register
+
+	/**
+	 * Registers an observer with an {@link onNext} handler concisely.
+	 */
+	def static <T> Closeable register(Observable<? extends T> source, (T) => void onNext) {
+		source.register(toObserver(onNext))
+	}
+
+	/**
+	 * Registers an observer with an {@link onNext} and {@link onFinish} handler concisely.
+	 */
+	def static <T> Closeable register(Observable<? extends T> source, (T) => void onNext, () => void onFinish) {
+		source.register(toObserver(onNext, [], onFinish))
+	}
+
+	/**
+	 * Registers an observer with an {@link onNext}, {@link onFinish} and {@link onError} handler concisely.
+	 */
+	def static <T> Closeable register(Observable<? extends T> source, (T) => void onNext, () => void onFinish, (Throwable) => void onError) {
+		source.register(toObserver(onNext, onError, onFinish))
+	}
+
+	// Transform
 
 	/**
 	 * Emits the first {@link count} elements from {@link source}. 
@@ -37,12 +79,14 @@ class Observables {
 	}
 	
 	/**
-	 * Buffers the nodes from {@link source} as they become available and send them out in {@link bufferSize} chunks after every {@link skip} elements (0 means {@link bufferSize}).
+	 * Buffers the elements from {@link source} as they become available and emits them in {@link bufferSize} chunks after every {@link skip} elements (0 means {@link bufferSize}).
 	 */
 	def static <T> Observable<List<T>> buffer(Observable<? extends T> source, int bufferSize, int skip) {
 		[observer | source.register(new BufferObserver(bufferSize, skip, observer))]
 	}
 	
+	// Compare
+
 	/**
 	 * Emits whether {@link source} started with the same elements as {@link prefix}.
 	 */
@@ -57,6 +101,8 @@ class Observables {
 		source.buffer(infix.size, 1).select[infix.elementsEqual(it)].where[it]
 	}
 
+	// Combine
+
 	/**
 	 * Emits a combination of the latest values of the given streams whenever one sends a new value.
 	 */
@@ -69,41 +115,6 @@ class Observables {
 	 */
 	def static <A, B, C, D, E> Observable<E> combineLatest(Observable<? extends A> oa, Observable<? extends B> ob, Observable<? extends C> oc, Observable<? extends D> od, (A, B, C, D) => E selector) {
 		combineLatest(oa, ob, oc, [a, b, c | new Tuple3(a, b, c)]).combineLatest(od, [abc, d | selector.apply(abc.a, abc.b, abc.c, d)]) 
-	}
-
-	/**
-	 * Registers an observer with an {@link onNext} handler concisely.
-	 */
-	def static <T> register(Observable<? extends T> source, (T) => void onNext) {
-		source.register(toObserver(onNext))
-	}
-
-	/**
-	 * Registers an observer with an {@link onNext} and {@link onFinish} handler concisely.
-	 */
-	def static <T> register(Observable<? extends T> source, (T) => void onNext, () => void onFinish) {
-		source.register(toObserver(onNext, [], onFinish))
-	}
-
-	/**
-	 * Registers an observer with an {@link onNext}, {@link onFinish} and {@link onError} handler concisely.
-	 */
-	def static <T> register(Observable<? extends T> source, (T) => void onNext, () => void onFinish, (Throwable) => void onError) {
-		source.register(toObserver(onNext, onError, onFinish))
-	}
-
-	/**
-	 * Varargs version of {@link Reactive#toObservable(Iterable)}.
-	 */
-	def static <T> makeObservable(T... values) {
-		toObservable(toIterable(values))
-	}
-	
-	/**
-	 * Varargs version of {@link Reactive#toObservable(Iterable, Scheduler)}.
-	 */
-	def static <T> makeObservable(Scheduler pool, T... values) {
-		toObservable(toIterable(values), pool)
 	}
 
 }
@@ -129,15 +140,15 @@ class BufferObserver<T> implements Observer<T> {
 	}
 
 	override void finish() {
-		if (buffer != null && buffer.size() > 0) {
+		if (buffer != null && buffer.size > 0) {
 			observer.next(buffer)
 		}
-		observer.finish()
+		observer.finish
 	}
 
 	override void next(T value) {
 		buffer.add(value as T)
-		if (buffer.size() == bufferSize) {
+		if (buffer.size == bufferSize) {
 			observer.next(buffer)
 			buffer = if (skip == 0) <T>newArrayList else <T>newArrayList(buffer.drop(skip))
 		}

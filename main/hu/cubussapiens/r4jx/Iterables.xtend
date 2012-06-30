@@ -12,6 +12,9 @@ class Iterables {
 
 	// Create
 
+	/**
+	 * Returns the given elements.
+	 */
 	def static <T> Iterable<T> makeIterable(T... values) {
 		toIterable(values)
 	}
@@ -49,14 +52,14 @@ class Iterables {
 	}
 
 	/**
-	 * Whether {@link first} and {@link second} are pairwise equal.
+	 * Whether the elements of {@link first} and {@link second} are pairwise equal.
 	 */
 	def static <T> boolean sequenceEqual(Iterable<? extends T> first, Iterable<? extends T> second) {
 		sequenceEqual(first, second, [a, b | a == b])
 	}
 
 	/**
-	 * Whether {@link first} and {@link second} are pairwise equal according to {@link comparator}.
+	 * Whether the elements of {@link first} and {@link second} are pairwise equal according to {@link comparator}.
 	 */
 	def static <T> boolean sequenceEqual(Iterable<? extends T> first, Iterable<? extends T> second, (T, T) => boolean comparator) {
 		first.size == second.size && zip(first, second, comparator).all[it].first
