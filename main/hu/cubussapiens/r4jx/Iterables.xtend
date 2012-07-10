@@ -4,6 +4,10 @@ import org.eclipse.xtext.xbase.lib.IterableExtensions
 
 import static extension hu.akarnokd.reactive4java.interactive.Interactive.*
 import static extension hu.cubussapiens.r4jx.Iterables.*
+import static com.google.common.collect.ImmutableList.*
+import static hu.akarnokd.reactive4java.base.Functions.*
+import static com.google.common.collect.Iterables.*
+import static com.google.common.base.Predicates.*
 
 class Iterables {
 
@@ -26,6 +30,13 @@ class Iterables {
 		generate(start, [it < start + count * step], [it + step])
 	}
 
+	/**
+	 * Returns the repeated applications of {@link function} starting from {@link seed}.
+	 */
+	def static <T> Iterable<T> iterate(T seed, (T) => T function) {
+		generate(seed, [true], function)
+	}
+
 	// Transform
 
 	/**
@@ -42,6 +53,27 @@ class Iterables {
 		source.drop(startIndex).takeFirst(count)
 	}
 
+	/**
+	 * Returns the elements from {@link source} except the first ones which satisfy {@link predicate}.
+	 */
+	def static <T> Iterable<T> dropWhile(Iterable<T> source, (T) => boolean predicate) {
+		source.drop(indexOf(source, not(predicate)))
+	}
+
+	/**
+	 * Returns the elements from {@link source} in reverse order.
+	 */
+	def static <T> Iterable<T> reverse(Iterable<T> source) {
+		copyOf(source).reverseView
+	}
+
+	/**
+	 * Returns the product of the elements from {@link source}.
+	 */
+	def static <T extends Number> Iterable<Double> product(Iterable<T> source) {
+		source.aggregate([double accumulator, value | accumulator * value.doubleValue], identityFirst)
+	}
+
 	// Compare
 
 	/**
@@ -49,6 +81,13 @@ class Iterables {
 	 */
 	def static boolean startsWith(Iterable<?> source, Iterable<?> prefix) {
 		prefix.elementsEqual(source.take(prefix.size))
+	}
+
+	/**
+	 * Whether {@link source} ends with {@link suffix}.
+	 */
+	def static boolean endsWith(Iterable<?> source, Iterable<?> suffix) {
+		suffix.elementsEqual(source.takeLast(suffix.size))
 	}
 
 	/**
