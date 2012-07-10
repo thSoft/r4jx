@@ -25,7 +25,7 @@ class Observables {
 	def static <T> Observable<T> makeObservable(T... values) {
 		toObservable(toIterable(values))
 	}
-	
+
 	/**
 	 * Varargs version of {@link Reactive#toObservable(Iterable, Scheduler)}.
 	 */
@@ -59,7 +59,7 @@ class Observables {
 	// Transform
 
 	/**
-	 * Emits the first {@link count} elements from {@link source}. 
+	 * Emits the first {@link count} elements from {@link source}.
 	 */
 	def static <T> Observable<T> takeFirst(Observable<? extends T> source, int count) {
 		source.where[index, _ | index < count]
@@ -78,14 +78,14 @@ class Observables {
 	def static <T> Observable<T> takeLast(Observable<? extends T> source) {
 		source.takeLast(1)
 	}
-	
+
 	/**
 	 * Buffers the elements from {@link source} as they become available and emits them in {@link bufferSize} chunks after every {@link skip} elements (0 means {@link bufferSize}).
 	 */
 	def static <T> Observable<List<T>> buffer(Observable<? extends T> source, int bufferSize, int skip) {
 		[observer | source.register(new BufferObserver(bufferSize, skip, observer))]
 	}
-	
+
 	// Compare
 
 	/**
@@ -108,14 +108,14 @@ class Observables {
 	 * Emits a combination of the latest values of the given streams whenever one sends a new value.
 	 */
 	def static <A, B, C, D> Observable<D> combineLatest(Observable<? extends A> oa, Observable<? extends B> ob, Observable<? extends C> oc, (A, B, C) => D selector) {
-		combineLatest(oa, ob, [a, b | new Tuple2(a, b)]).combineLatest(oc, [ab, c | selector.apply(ab.a, ab.b, c)]) 
+		combineLatest(oa, ob, [a, b | new Tuple2(a, b)]).combineLatest(oc, [ab, c | selector.apply(ab.a, ab.b, c)])
 	}
 
 	/**
 	 * Emits a combination of the latest values of the given streams whenever one sends a new value.
 	 */
 	def static <A, B, C, D, E> Observable<E> combineLatest(Observable<? extends A> oa, Observable<? extends B> ob, Observable<? extends C> oc, Observable<? extends D> od, (A, B, C, D) => E selector) {
-		combineLatest(oa, ob, oc, [a, b, c | new Tuple3(a, b, c)]).combineLatest(od, [abc, d | selector.apply(abc.a, abc.b, abc.c, d)]) 
+		combineLatest(oa, ob, oc, [a, b, c | new Tuple3(a, b, c)]).combineLatest(od, [abc, d | selector.apply(abc.a, abc.b, abc.c, d)])
 	}
 
 }
@@ -154,5 +154,5 @@ class BufferObserver<T> implements Observer<T> {
 			buffer = if (skip == 0) <T>newArrayList else <T>newArrayList(buffer.drop(skip))
 		}
 	}
-	
+
 }

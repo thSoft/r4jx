@@ -29,16 +29,16 @@ class Iterables {
 	// Transform
 
 	/**
-	 * Takes the first {@link count} elements from {@link source}. 
+	 * Takes the first {@link count} elements from {@link source}.
 	 */
-	def static <T> Iterable<? extends T> takeFirst(Iterable<? extends T> source, int count) {
+	def static <T> Iterable<T> takeFirst(Iterable<T> source, int count) {
 		IterableExtensions::take(source, count)
 	}
 
 	/**
 	 * Returns {@link count} elements starting from {@link startIndex} from {@link source}.
 	 */
-	def static <T> Iterable<? extends T> subsequence(Iterable<T> source, int startIndex, int count) {
+	def static <T> Iterable<T> subsequence(Iterable<T> source, int startIndex, int count) {
 		source.drop(startIndex).takeFirst(count)
 	}
 
