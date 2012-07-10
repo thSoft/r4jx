@@ -45,16 +45,16 @@ class Iterables {
 	// Compare
 
 	/**
-	 * Whether {@link source} starts with the same elements as {@link prefix}.
+	 * Whether {@link source} starts with {@link prefix}.
 	 */
-	def static <T> boolean startsWith(Iterable<? extends T> source, Iterable<? extends T> prefix) {
+	def static boolean startsWith(Iterable<?> source, Iterable<?> prefix) {
 		prefix.elementsEqual(source.take(prefix.size))
 	}
 
 	/**
 	 * Whether the elements of {@link first} and {@link second} are pairwise equal.
 	 */
-	def static <T> boolean sequenceEqual(Iterable<? extends T> first, Iterable<? extends T> second) {
+	def static boolean sequenceEqual(Iterable<?> first, Iterable<?> second) {
 		sequenceEqual(first, second, [a, b | a == b])
 	}
 

@@ -38,21 +38,21 @@ class Observables {
 	/**
 	 * Registers an observer with an {@link onNext} handler concisely.
 	 */
-	def static <T> Closeable register(Observable<? extends T> source, (T) => void onNext) {
+	def static <T> Closeable register(Observable<T> source, (T) => void onNext) {
 		source.register(toObserver(onNext))
 	}
 
 	/**
 	 * Registers an observer with an {@link onNext} and {@link onFinish} handler concisely.
 	 */
-	def static <T> Closeable register(Observable<? extends T> source, (T) => void onNext, () => void onFinish) {
+	def static <T> Closeable register(Observable<T> source, (T) => void onNext, () => void onFinish) {
 		source.register(toObserver(onNext, [], onFinish))
 	}
 
 	/**
 	 * Registers an observer with an {@link onNext}, {@link onFinish} and {@link onError} handler concisely.
 	 */
-	def static <T> Closeable register(Observable<? extends T> source, (T) => void onNext, () => void onFinish, (Throwable) => void onError) {
+	def static <T> Closeable register(Observable<T> source, (T) => void onNext, () => void onFinish, (Throwable) => void onError) {
 		source.register(toObserver(onNext, onError, onFinish))
 	}
 
@@ -61,28 +61,28 @@ class Observables {
 	/**
 	 * Emits the first {@link count} elements from {@link source}.
 	 */
-	def static <T> Observable<T> takeFirst(Observable<? extends T> source, int count) {
+	def static <T> Observable<T> takeFirst(Observable<T> source, int count) {
 		source.where[index, _ | index < count]
 	}
 
 	/**
 	 * Emits the first element of {@link source}, if any.
 	 */
-	def static <T> Observable<T> takeFirst(Observable<? extends T> source) {
+	def static <T> Observable<T> takeFirst(Observable<T> source) {
 		source.takeFirst(1)
 	}
 
 	/**
 	 * Emits the last element of {@link source}, if any.
 	 */
-	def static <T> Observable<T> takeLast(Observable<? extends T> source) {
+	def static <T> Observable<T> takeLast(Observable<T> source) {
 		source.takeLast(1)
 	}
 
 	/**
 	 * Buffers the elements from {@link source} as they become available and emits them in {@link bufferSize} chunks after every {@link skip} elements (0 means {@link bufferSize}).
 	 */
-	def static <T> Observable<List<T>> buffer(Observable<? extends T> source, int bufferSize, int skip) {
+	def static <T> Observable<List<T>> buffer(Observable<T> source, int bufferSize, int skip) {
 		[observer | source.register(new BufferObserver(bufferSize, skip, observer))]
 	}
 
@@ -91,14 +91,14 @@ class Observables {
 	/**
 	 * Emits whether {@link source} started with the same elements as {@link prefix}.
 	 */
-	def static <T> Observable<Boolean> startsWith(Observable<? extends T> source, Iterable<? extends T> prefix) {
+	def static <T> Observable<Boolean> startsWith(Observable<T> source, Iterable<T> prefix) {
 		toObservable(prefix).sequenceEqual(source.takeFirst(prefix.size))
 	}
 
 	/**
 	 * Emits true whenever {@link source} emitted the event sequence represented by {@link infix}.
 	 */
-	def static <T> Observable<Boolean> emitted(Observable<? extends T> source, Iterable<? extends T> infix) {
+	def static <T> Observable<Boolean> emitted(Observable<T> source, Iterable<T> infix) {
 		source.buffer(infix.size, 1).select[infix.elementsEqual(it)].where[it]
 	}
 
@@ -107,14 +107,14 @@ class Observables {
 	/**
 	 * Emits a combination of the latest values of the given streams whenever one sends a new value.
 	 */
-	def static <A, B, C, D> Observable<D> combineLatest(Observable<? extends A> oa, Observable<? extends B> ob, Observable<? extends C> oc, (A, B, C) => D selector) {
+	def static <A, B, C, D> Observable<D> combineLatest(Observable<A> oa, Observable<B> ob, Observable<C> oc, (A, B, C) => D selector) {
 		combineLatest(oa, ob, [a, b | new Tuple2(a, b)]).combineLatest(oc, [ab, c | selector.apply(ab.a, ab.b, c)])
 	}
 
 	/**
 	 * Emits a combination of the latest values of the given streams whenever one sends a new value.
 	 */
-	def static <A, B, C, D, E> Observable<E> combineLatest(Observable<? extends A> oa, Observable<? extends B> ob, Observable<? extends C> oc, Observable<? extends D> od, (A, B, C, D) => E selector) {
+	def static <A, B, C, D, E> Observable<E> combineLatest(Observable<A> oa, Observable<B> ob, Observable<C> oc, Observable<D> od, (A, B, C, D) => E selector) {
 		combineLatest(oa, ob, oc, [a, b, c | new Tuple3(a, b, c)]).combineLatest(od, [abc, d | selector.apply(abc.a, abc.b, abc.c, d)])
 	}
 
