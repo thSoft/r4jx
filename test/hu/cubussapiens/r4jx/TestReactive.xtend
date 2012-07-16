@@ -12,7 +12,7 @@ import static junit.framework.Assert.*
 
 import static extension hu.akarnokd.reactive4java.reactive.Reactive.*
 import static extension hu.cubussapiens.r4jx.Iterables.*
-import static extension hu.cubussapiens.r4jx.TestInteractive.*
+import static extension hu.akarnokd.reactive4java.TestInteractive.*
 import static extension hu.cubussapiens.r4jx.TestReactive.*
 
 class TestReactive {
