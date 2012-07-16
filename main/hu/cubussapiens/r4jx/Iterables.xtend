@@ -1,12 +1,10 @@
 package hu.cubussapiens.r4jx
 
-import org.eclipse.xtext.xbase.lib.IterableExtensions
-
+import static extension com.google.common.collect.Iterables.*
 import static extension hu.akarnokd.reactive4java.interactive.Interactive.*
 import static extension hu.cubussapiens.r4jx.Iterables.*
 import static com.google.common.collect.ImmutableList.*
 import static hu.akarnokd.reactive4java.base.Functions.*
-import static com.google.common.collect.Iterables.*
 import static com.google.common.base.Predicates.*
 
 class Iterables {
@@ -40,24 +38,17 @@ class Iterables {
 	// Transform
 
 	/**
-	 * Takes the first {@link count} elements from {@link source}.
-	 */
-	def static <T> Iterable<T> takeFirst(Iterable<T> source, int count) {
-		IterableExtensions::take(source, count)
-	}
-
-	/**
 	 * Returns {@link count} elements starting from {@link startIndex} from {@link source}.
 	 */
 	def static <T> Iterable<T> subsequence(Iterable<T> source, int startIndex, int count) {
-		source.drop(startIndex).takeFirst(count)
+		source.drop(startIndex).take(count)
 	}
 
 	/**
 	 * Returns the elements from {@link source} except the first ones which satisfy {@link predicate}.
 	 */
 	def static <T> Iterable<T> dropWhile(Iterable<T> source, (T) => boolean predicate) {
-		source.drop(indexOf(source, not(predicate)))
+		source.drop(source.indexOf(not(predicate)))
 	}
 
 	/**

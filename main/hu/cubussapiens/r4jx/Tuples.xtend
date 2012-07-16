@@ -1,7 +1,5 @@
 package hu.cubussapiens.r4jx
 
-import org.eclipse.xtend.lib.Data
-
 @Data class Tuple2<A, B> {
 	A a
 	B b

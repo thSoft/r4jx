@@ -59,17 +59,10 @@ class Observables {
 	// Transform
 
 	/**
-	 * Emits the first {@link count} elements from {@link source}.
-	 */
-	def static <T> Observable<T> takeFirst(Observable<T> source, int count) {
-		source.where[index, _ | index < count]
-	}
-
-	/**
 	 * Emits the first element of {@link source}, if any.
 	 */
 	def static <T> Observable<T> takeFirst(Observable<T> source) {
-		source.takeFirst(1)
+		source.take(1)
 	}
 
 	/**
@@ -92,7 +85,7 @@ class Observables {
 	 * Emits whether {@link source} started with the same elements as {@link prefix}.
 	 */
 	def static <T> Observable<Boolean> startsWith(Observable<T> source, Iterable<T> prefix) {
-		toObservable(prefix).sequenceEqual(source.takeFirst(prefix.size))
+		toObservable(prefix).sequenceEqual(source.take(prefix.size))
 	}
 
 	/**
